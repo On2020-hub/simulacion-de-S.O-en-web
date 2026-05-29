@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aviis</title>
+  <link rel="stylesheet" href="styles.css">
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+</head>
+<body class="theme-dark">
+  <input id="bgUpload" type="file" accept="image/*" style="display:none" onchange="loadBackground(event)">
+  <input id="profilePhotoUpload" type="file" accept="image/*" style="display:none" onchange="uploadProfilePhoto(event)">
+  <input id="feUploadInput" type="file" style="display:none" onchange="uploadFileToExplorer(event)" multiple>
+  <div class="screen" id="loginScreen">
+    <div class="authBox">
+      <h1>Aviis</h1>
+      <div class="sub">Ingresá o creá tu perfil para acceder al nuevo sistema operativo web.</div>
+      <div class="tabBtns">
+        <button id="tabLogin" class="tabBtn on" onclick="showTab('login')">Iniciar sesión</button>
+        <button id="tabReg" class="tabBtn" onclick="showTab('register')">Crear perfil</button>
+      </div>
+      <div id="panelLogin">
+        <div class="usersList" id="usersList"></div>
+        <label class="authLabel" for="lp">Contraseña</label>
+        <input id="lp" type="password" placeholder="Ingrese contraseña">
+        <button class="btnPrimary" onclick="doLogin()">Iniciar sesión</button>
+        <div class="authError" id="loginError"></div>
+      </div>
+      <div id="panelReg" style="display:none">
+        <label class="authLabel" for="rName">Nombre completo</label>
+        <input id="rName" type="text" placeholder="Tu nombre">
+        <label class="authLabel" for="rUser">Usuario</label>
+        <input id="rUser" type="text" placeholder="Usuario único">
+        <label class="authLabel">Seleccioná avatar</label>
+        <div class="avatarPicker">
+          <div class="avatarOpt picked" data-av="👤" onclick="pickAv(this)">👤</div>
+          <div class="avatarOpt" data-av="😎" onclick="pickAv(this)">😎</div>
+          <div class="avatarOpt" data-av="🧑‍💻" onclick="pickAv(this)">🧑‍💻</div>
+          <div class="avatarOpt" data-av="👩‍🚀" onclick="pickAv(this)">👩‍🚀</div>
+          <div class="avatarOpt" data-av="🦸" onclick="pickAv(this)">🦸</div>
+        </div>
+        <label class="authLabel" for="rPass">Contraseña</label>
+        <input id="rPass" type="password" placeholder="Contraseña">
+        <label class="authLabel" for="rPass2">Repetir contraseña</label>
+        <input id="rPass2" type="password" placeholder="Repetir contraseña">
+        <button class="btnPrimary" onclick="doRegister()">Crear perfil</button>
+        <div class="authError" id="regError"></div>
+        <div class="authSuccess" id="regSuccess"></div>
+      </div>
+      <div class="authDivider"><span>Aviis en tu navegador</span></div>
+      <div class="creditLogin">
+        <div>Hecho por: Maximo Iturraspe, Gonzalo Spesso</div>
+        <div>E.E.T.P 478 4to INF</div>
+      </div>
+    </div>
+    <div class="modalOverlay hidden" id="profileSettingsModal">
+      <div class="modalBox">
+        <div class="modalHeader">
+          <span>Ajustes de perfil</span>
+          <button class="closeBtn" onclick="closeProfileSettings()">×</button>
+        </div>
+        <div id="profileSettingsContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen hidden" id="desktop">    <!-- Menú contextual para iconos -->
+    <div class="contextMenu hidden" id="contextMenu">
+      <div class="contextItem" onclick="handleContextAction('delete')">🗑️ Enviar a Papelera</div>
+      <div class="contextItem" onclick="handleContextAction('permanent')">❌ Eliminar Permanentemente</div>
+    </div>
+    <div id="desktopArea">
+    </div>
+
+    <div class="creditDesktop">
+      <div>Hecho por: Maximo Iturraspe, Gonzalo Spesso • E.E.T.P 478 4to INF</div>
+    </div>
+    <div id="taskbar">
+      <button id="startBtn" onclick="toggleStartMenu()">⊞ Inicio</button>
+      <button id="wallBtn" class="appBtn" onclick="document.getElementById('bgUpload').click()">🖼️ Fondo</button>
+      <button id="themeBtn" onclick="toggleTheme()">🌙</button>
+      <button id="resetBgBtn" class="appBtn" onclick="resetBackground()">♻️ Rest.</button>
+      <div class="tbDiv"></div>
+      <div id="taskbarApps"></div>
+      <div class="taskbarSearch">
+        <input id="taskbarSearchInput" type="search" placeholder="Search the web..." onkeydown="if(event.key==='Enter') doTaskbarSearch(this.value)">
+      </div>
+      <div class="brightnessControl">
+        <span>☀️</span>
+        <input type="range" id="brightnessSlider" min="50" max="150" value="100" oninput="adjustBrightness(this.value)" onchange="adjustBrightness(this.value)">
+      </div>
+      <div id="tbClock"></div>
+    </div>
+    <div id="startMenu" class="startMenu hidden">
+      <div class="startHeader">Aviis</div>
+      <div class="startList">
+        <button class="startItem" onclick="openApp('files'); toggleStartMenu()">Explorador</button>
+        <button class="startItem" onclick="openManualFromMenu(); toggleStartMenu()">Manual de Usuario</button>
+        <div class="startDivider"></div>
+        <button class="startItem" onclick="doLogout()">Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="win hidden" id="win-mypc" style="width:620px;height:460px;left:80px;top:80px;">
+      <div class="tbar" onmousedown="startDrag(event,'win-mypc')">
+      <span>🖥️ Mi PC</span>
+      <button class="wb" onclick="minWin('mypc')">--</button>
+      <button class="wb wx" onclick="maxWin('win-mypc')">▢</button>
+      <button class="wb wc" onclick="closeWin('mypc')">X</button>
+    </div>
+    <div class="wbody">
+      <div style="display:flex;gap:10px;padding:14px;flex-wrap:wrap;">
+        <button id="pcTab-info" class="pcTab on" onclick="switchPcTab('info')">Información</button>
+        <button id="pcTab-ergo" class="pcTab" onclick="switchPcTab('ergo')">Ergonomía</button>
+      </div>
+      <div id="pcTabInfo"><div id="pcInfo"></div></div>
+      <div id="pcTabErgo" style="display:none"><div id="ergoContent"></div></div>
+    </div>
+  </div>
+
+  <div class="win hidden" id="win-notepad" style="width:540px;height:420px;left:120px;top:100px;">
+      <div class="tbar" onmousedown="startDrag(event,'win-notepad')">
+      <span>📝 Editor</span>
+      <button class="wb" onclick="minWin('notepad')">--</button>
+      <button class="wb wx" onclick="maxWin('win-notepad')">▢</button>
+      <button class="wb wc" onclick="closeWin('notepad')">X</button>
+    </div>
+    <div class="wbody" style="display:flex;flex-direction:column;height:100%;">
+      <div id="paintToolbar" style="justify-content:flex-start;padding:10px 12px;">
+        <button class="appBtn" onclick="fmt('bold','bt-bold')" id="bt-bold">Negrita</button>
+        <button class="appBtn" onclick="fmt('italic','bt-italic')" id="bt-italic">Cursiva</button>
+        <button class="appBtn" onclick="fmt('underline','bt-underline')" id="bt-underline">Subrayar</button>
+        <button class="appBtn pri" onclick="saveDoc()">Guardar</button>
+        <button class="appBtn" onclick="printDoc()">Imprimir</button>
+      </div>
+      <div id="ntEditor" contenteditable="true" style="flex:1;padding:14px;overflow:auto;background:#fff;border-top:1px solid #e0e0e0;font-size:13px;line-height:1.5;color:#222;outline:none;"></div>
+    </div>
+  </div>
+
+  <div class="win hidden" id="win-spreadsheet" style="width:700px;height:500px;left:150px;top:120px;">
+      <div class="tbar" onmousedown="startDrag(event,'win-spreadsheet')">
+      <span>📊 Planilla</span>
+      <button class="wb" onclick="minWin('spreadsheet')">--</button>
+      <button class="wb wx" onclick="maxWin('win-spreadsheet')">▢</button>
+      <button class="wb wc" onclick="closeWin('spreadsheet')">X</button>
+    </div>
+    <div class="wbody" style="display:flex;flex-direction:column;height:100%;">
+      <div id="stToolbar">
+        <button class="appBtn" onclick="applyFml()">Aplicar fórmula</button>
+        <button class="appBtn" onclick="shFmt('bold')">A</button>
+        <button class="appBtn" onclick="shFmt('italic')">I</button>
+        <button class="appBtn" onclick="shBg('#fffbcc')">Fondo</button>
+        <button class="appBtn" onclick="shTxt('#d23636')">Texto</button>
+        <input id="fbar" placeholder="=SUMA(A1:A3)" style="flex:1;min-width:160px;padding:6px 10px;border:1px solid #ccc;border-radius:8px;font-size:12px;">
+      </div>
+      <div id="sheetWrap" style="flex:1;overflow:auto;padding:10px;">
+        <table class="sht" id="shTbl"></table>
+      </div>
+    </div>
+  </div>
+
+  <div class="win hidden" id="win-network" style="width:520px;height:420px;left:180px;top:140px;">
+    <div class="tbar" onmousedown="startDrag(event,'win-network')">
+      <span>🌐 Redes</span>
+      <button class="wb" onclick="minWin('network')">--</button>
+      <button class="wb wx" onclick="maxWin('win-network')">▢</button>
+      <button class="wb wc" onclick="closeWin('network')">X</button>
+    </div>
+    <div class="wbody" id="netBody"></div>
+  </div>
+
+  <div class="win hidden" id="win-files" style="width:840px;height:520px;left:120px;top:120px;">
+    <div class="tbar" onmousedown="startDrag(event,'win-files')">
+      <span>📁 Explorador</span>
+      <button class="wb" onclick="minWin('files')">--</button>
+      <button class="wb wx" onclick="maxWin('win-files')">▢</button>
+      <button class="wb wc" onclick="closeWin('files')">X</button>
+    </div>
+    <div class="wbody" style="display:flex;flex-direction:column;height:100%;">
+      <div class="feTitle" id="feTitle">Explorador de archivos</div>
+      <div class="feToolbar">
+        <div id="feBreadcrumb" class="feBreadcrumb"></div>
+        <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="appBtn pri" onclick="createFolder()">Nueva carpeta</button>
+          <button class="appBtn pri" onclick="createFile()">Nuevo archivo</button>
+          <button class="appBtn" onclick="document.getElementById('feUploadInput').click()">Subir archivo</button>
+        </div>
+      </div>
+      <div class="feLayout">
+        <div class="feSidebar">
+          <div class="feTreeHeader">Ubicaciones</div>
+          <div id="feTree"></div>
+        </div>
+        <div class="feMain">
+          <div class="feListHeader">Contenido</div>
+          <div id="feList" class="feList"></div>
+          <div id="fePreview" class="fePreview"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="win hidden" id="win-printers" style="width:520px;height:420px;left:210px;top:160px;">
+    <div class="tbar" onmousedown="startDrag(event,'win-printers')">
+      <span>🖨️ Impresoras</span>
+        <button class="wb" onclick="minWin('printers')">--</button>
+        <button class="wb wx" onclick="maxWin('win-printers')">▢</button>
+        <button class="wb wc" onclick="closeWin('printers')">X</button>
+    </div>
+    <div class="wbody" id="printerBody"></div>
+  </div>
+
+  <div class="win hidden" id="win-paint" style="width:720px;height:520px;left:240px;top:180px;">
+    <div class="tbar" onmousedown="startDrag(event,'win-paint')">
+      <span>🎨 Paint</span>
+        <button class="wb" onclick="minWin('paint')">--</button>
+        <button class="wb wx" onclick="maxWin('win-paint')">▢</button>
+        <button class="wb wc" onclick="closeWin('paint')">X</button>
+    </div>
+    <div class="wbody" style="display:flex;flex-direction:column;height:100%;">
+      <div id="paintToolbar">
+        <div class="ptGroup">
+          <button id="pt-brush" class="ptBtn active" onclick="setPaintTool('brush')">Pincel</button>
+          <button id="pt-eraser" class="ptBtn" onclick="setPaintTool('eraser')">Goma</button>
+          <button id="pt-line" class="ptBtn" onclick="setPaintTool('line')">Línea</button>
+          <button id="pt-rect" class="ptBtn" onclick="setPaintTool('rect')">Rect.</button>
+          <button id="pt-circle" class="ptBtn" onclick="setPaintTool('circle')">Círculo</button>
+          <button id="pt-text" class="ptBtn" onclick="setPaintTool('text')">Texto</button>
+          <button id="pt-fill" class="ptBtn" onclick="setPaintTool('fill')">Balde</button>
+        </div>
+        <div class="ptSep"></div>
+        <div class="ptGroup">
+          <span style="font-size:12px;color:#333">Color</span>
+          <div id="paintCurrColor" style="width:20px;height:20px;border-radius:5px;border:1px solid #ccc;background:#000"></div>
+          <input id="paintColorPicker" type="color" value="#000000" onchange="setPaintColor(this.value)">
+        </div>
+        <div class="ptGroup">
+          <span style="font-size:12px;color:#333">Tamaño</span>
+          <input type="range" min="1" max="20" value="4" onchange="updateBrushSize(this.value)">
+          <span id="brushSizeVal">4</span>
+        </div>
+        <button class="appBtn" onclick="paintClear()">Limpiar</button>
+        <button class="appBtn pri" onclick="paintSave()">Guardar</button>
+      </div>
+      <div style="flex:1;position:relative;padding:10px;background:#e8e8e8;">
+        <canvas id="paintCanvas" width="960" height="420" style="width:100%;height:100%;background:#fff;border:1px solid #ccc;border-radius:10px;cursor:crosshair;" 
+          onmousedown="paintStart(event)" onmousemove="paintMove(event)" onmouseup="paintEnd(event)" onmouseleave="paintEnd(event)"></canvas>
+        <input id="paintTextInput" type="text" style="position:absolute;display:none;padding:8px;border:1px solid #999;border-radius:6px;background:#fff;z-index:50;" onkeydown="paintTextConfirm(event)">
+      </div>
+    </div>
+  </div>
+
+    <div class="win hidden" id="win-ai" style="width:560px;height:500px;left:270px;top:200px;">
+    <div class="tbar" onmousedown="startDrag(event,'win-ai')">
+      <span>🤖 Asistente IA</span>
+      <button class="wb" onclick="minWin('ai')">--</button>
+      <button class="wb wx" onclick="maxWin('win-ai')">▢</button>
+      <button class="wb wc" onclick="closeWin('ai')">X</button>
+    </div>
+    <div class="wbody" style="display:flex;flex-direction:column;height:100%;">
+      <div id="aiMessages" style="flex:1;overflow:auto;padding:14px;background:#f6f7fb"></div>
+      <div style="padding:10px;background:#fff;border-top:1px solid #e0e0e0;display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <label style="font-size:12px;color:#333;margin-right:6px">Provider</label>
+          <select id="aiProvider" style="padding:6px;border-radius:8px;border:1px solid #ccc">
+            <option value="anthropic">Anthropic</option>
+            <option value="openai">OpenAI</option>
+          </select>
+          <input id="aiKey" type="password" placeholder="API key" style="flex:1;padding:6px 8px;border-radius:8px;border:1px solid #ccc">
+          <button class="appBtn" onclick="saveAiSettings()">Save</button>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <textarea id="aiInput" placeholder="Escribí tu consulta..." style="flex:1;height:58px;padding:10px;border:1px solid #ccc;border-radius:10px;resize:none;font-size:13px;" onkeydown="aiInputKey(event)"></textarea>
+          <button id="aiSendBtn" class="appBtn pri" onclick="aiSend()">Enviar</button>
+          <button class="appBtn" onclick="aiClearChat()">Limpiar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="win hidden" id="win-gamestore" style="width:520px;height:420px;left:260px;top:220px;">
+    <div class="tbar" onmousedown="startDrag(event,'win-gamestore')">
+      <span>🎮 Games Store</span>
+      <button class="wb" onclick="minWin('gamestore')">--</button>
+      <button class="wb wx" onclick="maxWin('win-gamestore')">▢</button>
+      <button class="wb wc" onclick="closeWin('gamestore')">X</button>
+    </div>
+    <div class="wbody" style="display:flex;flex-direction:column;height:100%;">
+      <div id="gamestoreBody" style="flex:1;overflow:auto;padding:14px;background:#f6f7fb"></div>
+      <div style="padding:10px;background:#fff;border-top:1px solid #e0e0e0;display:flex;gap:8px;align-items:center;">
+        <div style="font-size:13px;color:#333">Browse games and download them to your desktop.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="win hidden" id="win-dou" style="width:420px;height:360px;left:300px;top:240px;">
+    <div class="tbar" onmousedown="startDrag(event,'win-dou')">
+      <span>🐶 dou</span>
+      <button class="wb" onclick="minWin('dou')">--</button>
+      <button class="wb wx" onclick="maxWin('win-dou')">▢</button>
+      <button class="wb wc" onclick="closeWin('dou')">X</button>
+    </div>
+    <div class="wbody" style="padding:14px;display:flex;flex-direction:column;gap:10px;">
+      <div id="douAppRoot" style="flex:1;display:flex;align-items:center;justify-content:center;"></div>
+    </div>
+  </div>
+
+  <div class="win hidden" id="win-skane" style="width:420px;height:380px;left:320px;top:220px;">
+    <div class="tbar" onmousedown="startDrag(event,'win-skane')">
+      <span>🐾 Skane</span>
+      <button class="wb" onclick="minWin('skane')">--</button>
+      <button class="wb wx" onclick="maxWin('win-skane')">▢</button>
+      <button class="wb wc" onclick="closeWin('skane')">X</button>
+    </div>
+    <div class="wbody" style="padding:14px;display:flex;flex-direction:column;gap:10px;">
+      <div id="skaneAppRoot" style="flex:1;display:flex;align-items:center;justify-content:center;"></div>
+    </div>
+  </div>
+
+  <div class="win hidden" id="win-trash" style="width:520px;height:420px;left:280px;top:220px;">
+    <div class="tbar" onmousedown="startDrag(event,'win-trash')">
+      <span>🗑️ Papelera</span>
+      <button class="wb" onclick="minWin('trash')">--</button>
+      <button class="wb wx" onclick="maxWin('win-trash')">▢</button>
+      <button class="wb wc" onclick="closeWin('trash')">X</button>
+    </div>
+    <div class="wbody" id="trashBody" style="padding:14px;"></div>
+  </div>
+
+  <div class="win hidden" id="win-aviis" style="width:560px;height:450px;left:250px;top:220px;">
+    <div class="tbar" onmousedown="startDrag(event,'win-aviis')">
+      <span>⬇️ Aviis</span>
+      <button class="wb" onclick="minWin('aviis')">--</button>
+      <button class="wb wx" onclick="maxWin('win-aviis')">▢</button>
+      <button class="wb wc" onclick="closeWin('aviis')">X</button>
+    </div>
+    <div class="wbody" style="display:flex;flex-direction:column;height:100%;">
+      <div id="aviisBody" style="flex:1;overflow:auto;padding:14px;"></div>
+    </div>
+  </div>
+
+  <div class="win hidden" id="win-manual" style="width:560px;height:420px;left:260px;top:200px;">
+    <div class="tbar" onmousedown="startDrag(event,'win-manual')">
+      <span>📘 Manual</span>
+      <button class="wb" onclick="minWin('manual')">--</button>
+      <button class="wb wx" onclick="maxWin('win-manual')">▢</button>
+      <button class="wb wc" onclick="closeWin('manual')">X</button>
+    </div>
+    <div class="wbody" style="padding:12px;display:flex;flex-direction:column;height:100%;">
+      <div id="manualBody" style="flex:1;overflow:auto;background:#fff;border-radius:8px;padding:8px;line-height:1.5;color:#111"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

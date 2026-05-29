@@ -1,0 +1,60 @@
+Manual de Usuario — Aviis Web OS
+
+1. Introducción
+Este documento explica las funciones básicas del sistema operativo web "Aviis" instalado en tu navegador. Incluye cómo iniciar sesión, usar el escritorio, administrar ventanas y aplicaciones como Games Store, dou y Skane.
+
+2. Iniciar sesión y perfiles
+- Crear perfil: En la pantalla inicial, selecciona "Crear perfil", completa nombre, usuario y contraseña, elige avatar y pulsa "Crear perfil".
+- Iniciar sesión: Selecciona tu usuario en la lista, ingresa la contraseña y pulsa "Iniciar sesión".
+- Ajustes de perfil: Desde la pantalla de login puedes abrir "Ajustes de perfil" para editar o eliminar un perfil.
+
+3. Escritorio
+- Área: El escritorio muestra iconos de aplicaciones y archivos. Haz doble clic para abrir.
+- Fondo: Usa el botón "Fondo" en la barra de tareas para cambiar el wallpaper.
+- Brillo: Ajusta el control deslizante en la barra de tareas.
+
+4. Barra de tareas
+- Inicio: Botón con icono para acceder al menú principal o cerrar sesión.
+- Apps: Las aplicaciones abiertas aparecen en la zona central de la barra de tareas.
+- Reloj: Hora y fecha en la parte derecha.
+
+5. Ventanas y controles
+- Abrir ventana: Haz doble clic en un icono de app o usa el Store.
+- Controles: En la parte superior derecha de cada ventana están, de izquierda a derecha: minimizar `--`, maximizar `▢`, cerrar `X`.
+  - Minimizar (`--`): Oculta la ventana pero la deja abierta en la barra de tareas.
+  - Maximizar (`▢`): Alterna entre tamaño normal y maximizado.
+  - Cerrar (`X`): Cierra la ventana.
+- Mover: Arrastra la barra de título (tbar) para reposicionar la ventana.
+
+6. Games Store
+- Abrir Store: Desde la lista de aplicaciones en el escritorio o la barra de tareas.
+- Instalar juegos: Haz click en un juego y pulsa "Instalar"; el icono aparecerá en el escritorio.
+
+7. Aplicaciones destacadas
+- dou (mascota retro): App estilo mascota con interacciones (alimentar, jugar, dormir). Arrastra comida para alimentarla y haz clic para acciones.
+- Skane (snake): Mini-juego tipo Snake. Controles: flechas o WASD. Recoge manzanas para crecer; evita chocar con muros o contigo mismo. Puntaje y record se guardan automáticamente.
+
+8. Explorador de archivos (Files)
+- Abrir: Haz doble clic en el icono Explorador.
+- Subir/crear archivos: Usa los botones dentro del Explorador para crear carpetas o subir archivos.
+
+9. Paint, Editor y otras apps
+- Editor: Editor de texto básico con formato y guardado.
+- Paint: Lienzo simple para dibujar; guarda como archivo.
+
+10. Atajos de teclado
+- Flechas o WASD: Mover en juegos (Skane).
+- Enter: Reiniciar Skane tras morir.
+- Ctrl+S (en editor): Guardar documento (si está implementado).
+
+11. Solución de problemas
+- La app no responde: Intenta cerrar y reabrir la ventana desde la barra de tareas.
+- No aparece icono tras instalar: Recarga la página; la instalación guarda en localStorage.
+- Juegos guardados: Los puntajes y configuraciones se almacenan en localStorage; limpiar el almacenamiento del sitio los eliminará.
+
+12. Contacto y notas finales
+- Este sistema está pensado como una experiencia local en el navegador. Se recomienda usar navegadores modernos (Chrome, Edge, Firefox).
+- Si quieres que el manual esté accesible desde la app "Files" o en el menú de ayuda, dime y lo enlazo dentro de la interfaz.
+
+---
+Archivo creado automáticamente: Manual_de_usuario.txt

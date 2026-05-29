@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>WebOS Argentina</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="loginScreen" class="screen">
+  <div class="authBox">
+    <div style="font-size:44px;margin-bottom:12px">💻</div>
+    <h1>WebOS</h1>
+    <div class="sub">Sistema Operativo Web · Argentina</div>
+    <div class="tabBtns">
+      <button class="tabBtn on" id="tabLogin" onclick="showTab('login')">Iniciar sesión</button>
+      <button class="tabBtn" id="tabReg" onclick="showTab('register')">Crear perfil</button>
+    </div>
+    <div id="panelLogin">
+      <div id="usersList" class="usersList"></div>
+      <label class="authLabel">Contraseña</label>
+      <input type="password" id="lp" placeholder="Ingresá tu contraseña">
+      <div id="loginError" class="authError"></div>
+      <button class="btnPrimary" onclick="doLogin()">Iniciar sesión</button>
+    </div>
+    <div id="panelReg" style="display:none">
+      <label class="authLabel">Elegí tu avatar</label>
+      <div class="avatarPicker" id="avatarPicker">
+        <span class="avatarOpt picked" data-av="👤" onclick="pickAv(this)">👤</span>
+        <span class="avatarOpt" data-av="🧑" onclick="pickAv(this)">🧑</span>
+        <span class="avatarOpt" data-av="👩" onclick="pickAv(this)">👩</span>
+        <span class="avatarOpt" data-av="🧔" onclick="pickAv(this)">🧔</span>
+        <span class="avatarOpt" data-av="👦" onclick="pickAv(this)">👦</span>
+        <span class="avatarOpt" data-av="👧" onclick="pickAv(this)">👧</span>
+        <span class="avatarOpt" data-av="🧑‍💻" onclick="pickAv(this)">🧑‍💻</span>
+        <span class="avatarOpt" data-av="🦸" onclick="pickAv(this)">🦸</span>
+      </div>
+      <label class="authLabel">Nombre completo</label>
+      <input type="text" id="rName" placeholder="Ej: Juan Pérez" autocomplete="off">
+      <label class="authLabel">Nombre de usuario</label>
+      <input type="text" id="rUser" placeholder="Ej: juanp (sin espacios)" autocomplete="off">
+      <label class="authLabel">Contraseña</label>
+      <input type="password" id="rPass" placeholder="Mínimo 4 caracteres">
+      <label class="authLabel">Confirmar contraseña</label>
+      <input type="password" id="rPass2" placeholder="Repetí la contraseña">
+      <div id="regError" class="authError"></div>
+      <div id="regSuccess" class="authSuccess"></div>
+      <button class="btnPrimary" onclick="doRegister()">Crear perfil</button>
+    </div>
+  </div>
+</div>
+
+<!-- DESKTOP -->
+<div id="desktop" class="screen hidden">
+  <div id="desktopArea">
+    <div class="desktopGrid">
+      <div class="desktopIcon" onclick="openApp('mypc')">
+        <div class="iconImg" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">🖥️</div>
+        <span>Mi PC</span>
+      </div>
+      <div class="desktopIcon" onclick="openApp('notepad')">
+        <div class="iconImg" style="background:linear-gradient(135deg,#f093fb,#f5576c)">📝</div>
+        <span>Procesador de texto</span>
+      </div>
+      <div class="desktopIcon" onclick="openApp('spreadsheet')">
+        <div class="iconImg" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">📊</div>
+        <span>Planilla de cálculo</span>
+      </div>
+      <div class="desktopIcon" onclick="openApp('network')">
+        <div class="iconImg" style="background:linear-gradient(135deg,#667eea,#764ba2)">🌐</div>
+        <span>Redes</span>
+      </div>
+      <div class="desktopIcon" onclick="openApp('printers')">
+        <div class="iconImg" style="background:linear-gradient(135deg,#f7971e,#ffd200)">🖨️</div>
+        <span>Impresoras</span>
+      </div>
+      <div class="desktopIcon" onclick="openApp('paint')">
+        <div class="iconImg" style="background:linear-gradient(135deg,#f953c6,#b91d73)">🎨</div>
+        <span>Paint</span>
+      </div>
+      <div class="desktopIcon" onclick="openApp('ai')">
+        <div class="iconImg" style="background:linear-gradient(135deg,#11998e,#38ef7d)">🤖</div>
+        <span>Asistente IA</span>
+      </div>
+    </div>
+  </div>
+  <div id="taskbar">
+    <button id="startBtn" onclick="doLogout()">⊞ Inicio</button>
+    <div class="tbDiv"></div>
+    <div id="taskbarApps"></div>
+    <div class="tbDiv"></div>
+    <button id="themeBtn" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
+    <div class="tbDiv"></div>
+    <div id="tbClock"></div>
+  </div>
+</div>
+
+<!-- MY PC -->
+<div class="win hidden" id="win-mypc" style="width:560px;height:520px;left:60px;top:30px;z-index:200">
+  <div class="tbar" onmousedown="startDrag(event,'win-mypc')">
+    <button class="wb wc" onclick="closeWin('mypc')"></button>
+    <button class="wb wm" onclick="minWin('mypc')"></button>
+    <button class="wb wx" onclick="maxWin('win-mypc')"></button>
+    <span>🖥️ Mi PC — Información del sistema</span>
+  </div>
+  <div class="wbody" style="display:flex;flex-direction:column">
+    <div id="pcTabs" style="display:flex;border-bottom:1px solid #e0e0e0;background:#fff;flex-shrink:0">
+      <button class="pcTab on" id="pcTab-info" onclick="switchPcTab('info')">⚙️ Sistema</button>
+      <button class="pcTab" id="pcTab-ergo" onclick="switchPcTab('ergo')">🪑 Ergonomía</button>
+    </div>
+    <div id="pcTabInfo" style="flex:1;overflow:auto"><div class="pcs" id="pcInfo"></div></div>
+    <div id="pcTabErgo" style="flex:1;overflow:auto;display:none"><div id="ergoContent"></div></div>
+  </div>
+</div>
+
+<!-- NOTEPAD -->
+<div class="win hidden" id="win-notepad" style="width:860px;height:580px;left:100px;top:40px;z-index:200">
+  <div class="tbar" onmousedown="startDrag(event,'win-notepad')">
+    <button class="wb wc" onclick="closeWin('notepad')"></button>
+    <button class="wb wm" onclick="minWin('notepad')"></button>
+    <button class="wb wx" onclick="maxWin('win-notepad')"></button>
+    <span>📝 Procesador de texto — NoteOnline</span>
+  </div>
+  <div class="wbody" style="overflow:hidden;position:relative;background:#fff">
+    <div style="position:absolute;inset:0;overflow:hidden">
+      <iframe id="notepadFrame" src="https://noteonline.com/es"
+        style="position:absolute;top:-62px;left:0;width:100%;height:calc(100% + 62px);border:none;display:block;"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups" loading="lazy"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- SPREADSHEET -->
+<div class="win hidden" id="win-spreadsheet" style="width:680px;height:480px;left:140px;top:70px;z-index:200">
+  <div class="tbar" onmousedown="startDrag(event,'win-spreadsheet')">
+    <button class="wb wc" onclick="closeWin('spreadsheet')"></button>
+    <button class="wb wm" onclick="minWin('spreadsheet')"></button>
+    <button class="wb wx" onclick="maxWin('win-spreadsheet')"></button>
+    <span>📊 Planilla de cálculo</span>
+  </div>
+  <div class="wbody" style="display:flex;flex-direction:column">
+    <div id="stToolbar">
+      <button class="appBtn" onclick="shFmt('bold')"><b>N</b></button>
+      <button class="appBtn" onclick="shFmt('italic')"><i>I</i></button>
+      <label style="font-size:11px;color:#666">Fondo:</label>
+      <input type="color" id="cbg" value="#ffffff" onchange="shBg(this.value)" style="width:26px;height:22px;border:none;cursor:pointer;border-radius:3px">
+      <label style="font-size:11px;color:#666">Texto:</label>
+      <input type="color" id="ctx" value="#000000" onchange="shTxt(this.value)" style="width:26px;height:22px;border:none;cursor:pointer;border-radius:3px">
+      <div style="flex:1"></div>
+      <input id="fbar" placeholder="=A1+B1 o =SUMA(A1:C3)" style="padding:3px 7px;border:1px solid #ccc;border-radius:5px;font-size:11px;width:200px;outline:none">
+      <button class="appBtn pri" onclick="applyFml()">= OK</button>
+    </div>
+    <div id="sheetWrap"><table class="sht" id="shTbl"></table></div>
+  </div>
+</div>
+
+<!-- NETWORK -->
+<div class="win hidden" id="win-network" style="width:480px;height:540px;left:180px;top:40px;z-index:200">
+  <div class="tbar" onmousedown="startDrag(event,'win-network')">
+    <button class="wb wc" onclick="closeWin('network')"></button>
+    <button class="wb wm" onclick="minWin('network')"></button>
+    <button class="wb wx" onclick="maxWin('win-network')"></button>
+    <span>🌐 Configuración de Redes</span>
+  </div>
+  <div class="wbody" id="netBody"></div>
+</div>
+
+<!-- PRINTERS -->
+<div class="win hidden" id="win-printers" style="width:460px;height:520px;left:200px;top:50px;z-index:200">
+  <div class="tbar" onmousedown="startDrag(event,'win-printers')">
+    <button class="wb wc" onclick="closeWin('printers')"></button>
+    <button class="wb wm" onclick="minWin('printers')"></button>
+    <button class="wb wx" onclick="maxWin('win-printers')"></button>
+    <span>🖨️ Impresoras</span>
+  </div>
+  <div class="wbody" id="printerBody"></div>
+</div>
+
+<!-- PAINT -->
+<div class="win hidden" id="win-paint" style="width:750px;height:540px;left:80px;top:30px;z-index:200">
+  <div class="tbar" onmousedown="startDrag(event,'win-paint')">
+    <button class="wb wc" onclick="closeWin('paint')"></button>
+    <button class="wb wm" onclick="minWin('paint')"></button>
+    <button class="wb wx" onclick="maxWin('win-paint')"></button>
+    <span>🎨 Paint</span>
+  </div>
+  <div class="wbody" style="display:flex;flex-direction:column;background:#e8e8e8">
+    <!-- Toolbar -->
+    <div id="paintToolbar">
+      <!-- Herramientas -->
+      <div class="ptGroup">
+        <button class="ptBtn active" id="pt-brush" onclick="setPaintTool('brush')" title="Pincel">✏️</button>
+        <button class="ptBtn" id="pt-eraser" onclick="setPaintTool('eraser')" title="Borrador">🧹</button>
+        <button class="ptBtn" id="pt-fill" onclick="setPaintTool('fill')" title="Balde relleno">🪣</button>
+        <button class="ptBtn" id="pt-line" onclick="setPaintTool('line')" title="Línea">╱</button>
+        <button class="ptBtn" id="pt-rect" onclick="setPaintTool('rect')" title="Rectángulo">▭</button>
+        <button class="ptBtn" id="pt-circle" onclick="setPaintTool('circle')" title="Círculo">○</button>
+        <button class="ptBtn" id="pt-text" onclick="setPaintTool('text')" title="Texto">T</button>
+      </div>
+      <div class="ptSep"></div>
+      <!-- Tamaño de pincel -->
+      <div class="ptGroup" style="align-items:center">
+        <label style="font-size:10px;color:#555">Tamaño:</label>
+        <input type="range" id="brushSize" min="1" max="40" value="4" style="width:70px" oninput="updateBrushSize(this.value)">
+        <span id="brushSizeVal" style="font-size:10px;color:#333;min-width:20px">4</span>
+      </div>
+      <div class="ptSep"></div>
+      <!-- Colores -->
+      <div class="ptGroup" style="flex-wrap:wrap;gap:3px;max-width:180px">
+        <div id="paintColorPalette"></div>
+      </div>
+      <div class="ptSep"></div>
+      <!-- Color actual + picker -->
+      <div class="ptGroup" style="align-items:center;gap:6px">
+        <div id="paintCurrColor" style="width:28px;height:28px;border-radius:6px;border:2px solid #999;background:#000;cursor:pointer" title="Color personalizado" onclick="document.getElementById('paintColorPicker').click()"></div>
+        <input type="color" id="paintColorPicker" value="#000000" style="opacity:0;width:0;height:0;position:absolute" onchange="setPaintColor(this.value)">
+      </div>
+      <div class="ptSep"></div>
+      <!-- Acciones -->
+      <div class="ptGroup">
+        <button class="ptBtn" onclick="paintClear()" title="Limpiar todo" style="font-size:10px;padding:4px 7px">🗑️ Limpiar</button>
+        <button class="ptBtn" onclick="paintSave()" title="Guardar imagen" style="font-size:10px;padding:4px 7px">💾 Guardar</button>
+      </div>
+    </div>
+    <!-- Canvas area -->
+    <div style="flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:flex-start;padding:8px;background:#c8c8c8">
+      <canvas id="paintCanvas" width="1200" height="800"
+        style="background:#fff;cursor:crosshair;display:block;box-shadow:0 2px 8px rgba(0,0,0,0.3)"
+        onmousedown="paintStart(event)" onmousemove="paintMove(event)" onmouseup="paintEnd(event)" onmouseleave="paintEnd(event)">
+      </canvas>
+      <!-- Input de texto flotante -->
+      <input id="paintTextInput" type="text" placeholder="Escribí y presioná Enter"
+        style="position:absolute;display:none;border:2px dashed #667eea;padding:3px 6px;font-size:14px;outline:none;background:rgba(255,255,255,0.9);border-radius:4px;z-index:9999"
+        onkeydown="paintTextConfirm(event)">
+    </div>
+  </div>
+</div>
+
+<!-- AI ASSISTANT -->
+<div class="win hidden" id="win-ai" style="width:480px;height:560px;left:220px;top:30px;z-index:200">
+  <div class="tbar" onmousedown="startDrag(event,'win-ai')">
+    <button class="wb wc" onclick="closeWin('ai')"></button>
+    <button class="wb wm" onclick="minWin('ai')"></button>
+    <button class="wb wx" onclick="maxWin('win-ai')"></button>
+    <span>🤖 Asistente IA — WebOS AI</span>
+  </div>
+  <div class="wbody" style="display:flex;flex-direction:column;background:#f0f2f5">
+    <!-- Header IA -->
+    <div style="padding:12px 16px;background:linear-gradient(135deg,#11998e,#38ef7d);display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <div style="font-size:28px">🤖</div>
+      <div>
+        <div style="color:#fff;font-size:13px;font-weight:700">WebOS AI</div>
+        <div style="color:rgba(255,255,255,0.8);font-size:10px">Powered by Claude · Siempre listo para ayudarte</div>
+      </div>
+      <button class="ptBtn" onclick="aiClearChat()" style="margin-left:auto;font-size:10px;padding:4px 8px;background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.4);color:#fff" title="Limpiar chat">🗑️</button>
+    </div>
+    <!-- Mensajes -->
+    <div id="aiMessages" style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px">
+      <div class="aiMsg bot">
+        <div class="aiAvatar">🤖</div>
+        <div class="aiBubble">¡Hola! Soy el asistente IA de WebOS. Podés preguntarme sobre cualquier tema: tecnología, ayuda con tareas, programación, matemáticas, escritura... ¿En qué te ayudo hoy?</div>
+      </div>
+    </div>
+    <!-- Input -->
+    <div style="padding:10px;background:#fff;border-top:1px solid #e0e0e0;display:flex;gap:8px;flex-shrink:0;align-items:flex-end">
+      <textarea id="aiInput" placeholder="Escribí tu mensaje..." rows="2"
+        style="flex:1;border:1px solid #ccc;border-radius:10px;padding:8px 12px;font-size:12px;resize:none;outline:none;font-family:inherit;line-height:1.4"
+        onkeydown="aiInputKey(event)"></textarea>
+      <button id="aiSendBtn" onclick="aiSend()" style="background:linear-gradient(135deg,#11998e,#38ef7d);border:none;border-radius:10px;padding:10px 14px;cursor:pointer;font-size:16px;color:#fff;flex-shrink:0">➤</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
